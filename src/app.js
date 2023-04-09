@@ -1,4 +1,5 @@
 const express = require('express')
+const util = require('./util')
 const app = express()
 
 app.get('', (req, res) => {
@@ -6,7 +7,22 @@ app.get('', (req, res) => {
 })
 
 app.get('/weather', (req, res) => {
-    res.send("<h1>This is the weather page</h1>")
+    if (!req.query.address) {
+        res.send({
+            error: "Please enter the address !"
+        })
+        return
+    }
+    util.weather(req.query.address, (response, error) => {
+        res.send({
+            location: response.request.query,
+            region: response.location.region,
+            currentTemperature: response.current.temperature,
+            feelslike:response.current.feelslike,
+            unit: response.request.unit
+        })
+    })
+
 })
 
 app.listen(3000, () => {
